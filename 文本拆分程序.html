@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>文本切分工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>文本切分工具</h1>
+
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="file">选择要上传的文本文件:</label>
+        <input type="file" id="file" name="file" required>
+
+        <button type="submit">上传并切分</button>
+    </form>
+
+    <div id="message-container" class="message"></div>
+
+    <script>
+        const form = document.getElementById("upload-form");
+        const messageContainer = document.getElementById("message-container");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            messageContainer.innerText = "正在上传文件，请稍候...";
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error("上传文件失败");
+                }
+
+                const data = await response.json();
+                messageContainer.innerText = `成功切分并保存了${data.message}个文件。`;
+
+                // 清空输入框的值
+                form.reset();
+            } catch (error) {
+                console.error(error);
+                messageContainer.innerText = "发生错误，请重试。";
+            }
+        });
+    </script>
+</body>
+</html>
