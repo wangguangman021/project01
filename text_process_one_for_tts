@@ -1,0 +1,53 @@
+import os
+import json
+import torchaudio
+import argparse
+
+import whisper
+
+
+def process_audio_files(input_dir, output_file):
+    model = whisper.load_model("large")  # 加载whisper模型
+
+    annotations = []  # 存储注释信息
+
+    for file_name in os.listdir(input_dir):  # 遍历输入文件夹中的文件
+        file_path = os.path.join(input_dir, file_name)  # 构建完整的文件路径
+
+        if not os.path.isfile(file_path):
+            continue  # 跳过非文件对象
+
+        print(f"Processing audio file: {file_path}")
+
+        result = model.transcribe(file_path)  # 使用whisper模型进行转录
+
+        segments = result["segments"]  # 获取转录结果中的片段
+
+        text_segments = [seg["text"] for seg in segments if seg is not None]  # 提取文本内容
+
+        # 添加打印语句
+        print(f"Transcription for file {file_path}: {' '.join(text_segments)}")
+
+        speaker = os.path.basename(input_dir)  # 获取音频文件夹名称作为speaker
+
+        annotation = f"{file_path}|{speaker}|{', '.join(text_segments)}\n"  # 构造注释信息
+
+        annotations.append(annotation)  # 添加到注释列表
+
+    if len(annotations) == 0:
+        print("Warning: No audio files found in the input directory.")
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.writelines(annotations)  # 将注释信息写入输出文件
+
+    print("Annotation file generated successfully.")
+
+
+# 解析命令行参数
+parser = argparse.ArgumentParser()
+parser.add_argument("--input_dir", required=True, help="Input directory containing audio files")
+parser.add_argument("--output_file", required=True, help="Output file for annotations")
+args = parser.parse_args()
+
+# 处理音频文件并生成注释文件
+process_audio_files(args.input_dir, args.output_file)
