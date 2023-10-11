@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>API Request and Response Example</title>
+  </head>
+  <body>
+    <h1>API Request and Response Example</h1>
+    <input id="input1" type="text" placeholder="Input 1">
+    <input id="input2" type="text" placeholder="Input 2">
+    <input type="file" id="folderInput" webkitdirectory directory multiple>
+    <input id="outputPath" type="text" placeholder="Output Path">
+    <button onclick="loadFiles()">Load Files</button>
+    <button onclick="setOutputPath()">Set Output Path</button>
+    <button onclick="splitAndSave()">Split and Save</button>
+    <p id="response"></p>
+    <script>
+      var fileContents = []; // 存储读取到的文件内容
+      var outputPath = ""; // 保存txt文件的输出路径
+
+      function loadFiles() {
+        var folderInput = document.getElementById('folderInput');
+        var files = folderInput.files;
+
+        var filePromises = [];
+
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          var filePromise = readFile(file);
+          filePromises.push(filePromise);
+        }
+
+        Promise.all(filePromises)
+          .then(contents => {
+            fileContents = contents; // 将读取到的文档内容存储在fileContents数组中
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      function readFile(file) {
+        return new Promise((resolve, reject) => {
+          var reader = new FileReader();
+
+          reader.onload = function(e) {
+            var contents = e.target.result;
+            resolve(contents);
+          }
+
+          reader.onerror = function() {
+            reject(new Error('Failed to read the file'));
+          }
+
+          reader.readAsText(file);
+        });
+      }
+
+      function setOutputPath() {
+        outputPath = document.getElementById('outputPath').value;
+      }
+
+      function splitAndSave() {
+        if (outputPath === "") {
+          alert("Please set the output path first");
+          return;
+        }
+
+        for (var i = 0; i < fileContents.length; i++) {
+          var content = fileContents[i];
+          var chunks = splitIntoChunks(content, 1000);
+
+          for (var j = 0; j < chunks.length; j++) {
+            var chunk = chunks[j];
+            saveTextToFile(chunk, outputPath + "/chunk_" + (j + 1) + ".txt");
+          }
+        }
+      }
+
+      function splitIntoChunks(text, chunkSize) {
+        var chunks = [];
+        var length = text.length;
+
+        for (var i = 0; i < length; i += chunkSize) {
+          var chunk = text.substring(i, i + chunkSize);
+          chunks.push(chunk);
+        }
+
+        return chunks;
+      }
+
+      function saveTextToFile(text, filePath) {
+        var link = document.createElement('a');
+        link.href = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+        link.download = filePath;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    </script>
+  </body>
+</html>
