@@ -1,0 +1,76 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TTS模型训练程序</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    #app {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      text-align: left;
+      white-space: pre-wrap;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+  <!-- 引入Vue和axios库 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>TTS模型训练程序</h1>
+
+    <input type="text" v-model="filePath" placeholder="文件路径">
+
+    <button @click="generateDataset">生成训练集</button>
+    <button @click="startTraining">开始训练</button>
+    <button @click="downloadModel">下载pth文件</button>
+
+    <pre class="output">{{ output }}</pre>
+  </div>
+
+  <!-- 引入Vue脚本 -->
+  <script src="app.js"></script>
+</body>
+</html>
