@@ -1,0 +1,33 @@
+from fastapi import FastAPI
+import os
+import uvicorn
+import subprocess
+
+app = FastAPI()
+
+@app.get("/execute_files/file1")
+def execute_file1():
+    # 执行文件1.py的代码逻辑
+    file_path = "/path/to/project/folder/file1.py"
+    subprocess.call(["python", file_path])
+
+    return {"message": "file1.py 执行完毕"}
+
+@app.get("/execute_files/file2")
+def execute_file2():
+    # 执行文件2.py的代码逻辑
+    file_path = "/path/to/project/folder/file2.py"
+    subprocess.call(["python", file_path])
+
+    return {"message": "file2.py 执行完毕"}
+
+@app.get("/execute_files/file3")
+def execute_file3():
+    # 执行文件3.py的代码逻辑
+    file_path = "/path/to/project/folder/file3.py"
+    subprocess.call(["python", file_path])
+
+    return {"message": "file3.py 执行完毕"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
