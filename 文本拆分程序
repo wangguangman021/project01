@@ -1,0 +1,34 @@
+from fastapi import FastAPI, UploadFile, File
+import os
+
+app = FastAPI()
+
+
+def save_text_chunk(text: str, filename: str):
+    with open(filename, 'w') as f:
+        f.write(text)
+
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    # 创建用于保存文件的文件夹（如果不存在）
+    folder = "output"
+    os.makedirs(folder, exist_ok=True)
+
+    # 读取上传的文件内容
+    contents = await file.read()
+    text = contents.decode()
+
+    # 将文本切分为1000字一块
+    chunks = [text[i:i+1000] for i in range(0, len(text), 1000)]
+
+    # 逐个保存切分后的文本块
+    for i, chunk in enumerate(chunks):
+        filename = f"{folder}/chunk_{i}.txt"
+        save_text_chunk(chunk, filename)
+
+    return {"message": f"成功切分并保存了{len(chunks)}个文件。"}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
