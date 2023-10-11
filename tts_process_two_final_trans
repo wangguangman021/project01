@@ -1,0 +1,37 @@
+from text import _clean_text
+
+def clean_file(file_path, cleaner_names):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        cleaned_lines = []
+        
+        for line in lines:
+            if '|' in line:
+                parts = line.split('|')
+                if len(parts) >= 3:
+                    text = parts[2].strip()
+                    cleaned_text = _clean_text(text, cleaner_names)
+                    cleaned_line = f"{parts[0]}|{parts[1]}|{cleaned_text}"
+                    cleaned_lines.append(cleaned_line)
+        
+        return cleaned_lines
+
+
+def main():
+    # 文件路径和清洁器名称列表
+    file_path = "/Users/wangguangman/VITS-fast-fine-tuning/long_character_anno.txt"
+    cleaner_names = ["japanese_cleaners"]
+    
+    # 调用clean_file()函数处理txt文件
+    cleaned_lines = clean_file(file_path, cleaner_names)
+
+    # 将清洁后的内容写入新的txt文件
+    output_file_path = "/Users/wangguangman/VITS-fast-fine-tuning/final_process.txt"
+    with open(output_file_path, 'w') as file:
+        file.write('\n'.join(cleaned_lines))
+
+    print("文本清洁完成！")
+
+
+if __name__ == '__main__':
+    main()
