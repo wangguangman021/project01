@@ -118,4 +118,27 @@
           }
         } else {
           // Save content as it is to a file or folder
-         
+         function sendApiRequest() {
+  var input1 = document.getElementById('input1').value;
+  var input2 = document.getElementById('input2').value;
+
+  var content = input1 + ' ' + input2 + ' ' + fileContents.join('\n');
+
+  var apiUrl = 'http://localhost:8080';
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt: content }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('response').innerText = data.response;
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+</body>
+</html>
+
