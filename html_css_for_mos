@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>API Request and Response Example</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      #folderInput {
+        margin-bottom: 10px;
+      }
+
+      button {
+        margin-bottom: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      #response {
+        padding: 10px;
+        text-align: left;
+        white-space: pre-wrap;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>API Request and Response Example</h1>
+    <input id="input1" type="text" placeholder="Input 1">
+    <input id="input2" type="text" placeholder="Input 2">
+    <input type="file" id="folderInput" webkitdirectory directory multiple>
+    <button onclick="loadFiles()">Load Files</button>
+    <button onclick="sendApiRequest()">Send API Request</button>
+    <p id="response"></p>
+    <script>
+      var fileContents = []; // 存储读取到的文件内容
+
+      function loadFiles() {
+        var folderInput = document.getElementById('folderInput');
+        var files = folderInput.files;
+
+        var filePromises = [];
+
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          var filePromise = readFile(file);
+          filePromises.push(filePromise);
+        }
+
+        Promise.all(filePromises)
+          .then(contents => {
+            fileContents = contents; // 将读取到的文档内容存储在fileContents数组中
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      function readFile(file) {
+        return new Promise((resolve, reject) => {
+          var reader = new FileReader();
+
+          reader.onload = function(e) {
+            var contents = e.target.result;
+            resolve(contents);
+          }
+
+          reader.onerror = function() {
+            reject(new Error('Failed to read the file'));
+          }
+
+          reader.readAsText(file);
+        });
+      }
+
+      function sendApiRequest() {
+        var input1 = document.getElementById('input1').value;
+        var input2 = document.getElementById('input2').value;
+
+        var content = input1 + ' ' + input2 + ' ' + fileContents.join('\n');
+
+        var apiUrl = 'http://localhost:8080';
+        fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt: content }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('response').innerText = data.response;
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    </script>
+  </body>
+</html>
